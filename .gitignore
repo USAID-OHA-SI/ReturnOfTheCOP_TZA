@@ -39,3 +39,8 @@ rsconnect/
 #folders
 data/
 out/
+
+#files
+*.xlsx
+*.rda
+*.csv
