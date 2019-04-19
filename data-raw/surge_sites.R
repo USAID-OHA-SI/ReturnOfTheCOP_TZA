@@ -1,9 +1,8 @@
 library(tidyverse)
 library(readxl)
-library(usethis)
 
 #import
-df_monthy <- read_excel("data-raw/Facility Basic Raw Data.xlsx")
+df_monthy <- read_excel("data/Facility Basic Raw Data.xlsx")
 
 surge_sites <- df_monthy %>% 
   rename_all(tolower) %>% 
