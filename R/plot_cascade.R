@@ -6,7 +6,7 @@
 plot_cascade <- function(prime, filepath_save = NULL){
   
   #graph title
-  partner_title <- paste(prime, "Trends")
+  partner_title <- paste(prime, "Cascade Trends")
   
   #grah HTS bar chart
   viz_hts <- df_monthly_hts %>% 
@@ -67,9 +67,9 @@ plot_cascade <- function(prime, filepath_save = NULL){
                         top = textGrob(partner_title, 
                                        gp = gpar(fontfamily = "Gill Sans MT", fontsize = 13),
                                        hjust = 1,
-                                       x = .15),
+                                       x = .2),
                         bottom = textGrob(
-                          "Source: Tanzania Monthly Reporting Portal, Basic Raw Data, Oct 2018 - Feb 2019",
+                          "Source: Tanzania Monthly Reporting Portal, Basic Raw Data, Oct 2018 - Mar 2019",
                           gp = gpar(fontfamily = "Gill Sans MT", fontsize = 9, col = "#595959"),
                           hjust = 1,
                           x = 1
@@ -80,9 +80,9 @@ plot_cascade <- function(prime, filepath_save = NULL){
                         top = textGrob(partner_title,
                                        gp = gpar(fontfamily = "Gill Sans MT", fontsize = 13),
                                        hjust = 1,
-                                       x = .15),
+                                       x = .2),
                         bottom = textGrob(
-                          "Source: Tanzania Monthly Reporting Portal, Basic Raw Data, Oct 2018 - Feb 2019",
+                          "Source: Tanzania Monthly Reporting Portal, Basic Raw Data, Oct 2018 - Mar 2019",
                           gp = gpar(fontfamily = "Gill Sans MT", fontsize = 9, col = "#595959"),
                           hjust = 1,
                           x = 1

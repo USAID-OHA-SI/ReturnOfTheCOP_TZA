@@ -12,42 +12,82 @@
   library(gridExtra)
   library(grid)
 
-#import monthly data
-  df_monthly <- read_excel("data/All Monthly Raw Data in given timeframe.xlsx")
 
-#tidy dataset
-  df_monthly <- df_monthly %>% 
-    gather(ind_monthly, val, -Partner:-Month, na.rm = TRUE) %>% 
-    filter(val != 0) %>% 
-    rename(orgunituid = `DATIM ID`) %>% 
-    rename_all(tolower)
+# Data from OLD Monthly Portal: Oct 18 - Feb 19 ---------------------------
 
-#filter to just 241 surge sites
-  load("data/surge_sites.rda")
+  #import monthly data
+    df_monthly <- read_excel("data/All Monthly Raw Data in given timeframe.xlsx",
+                             col_types = "text")
   
-  df_monthly <- df_monthly %>% 
-    filter(orgunituid %in% surge_sites) 
+  #tidy dataset
+    df_monthly <- df_monthly %>% 
+      mutate_all(na_if, 0) %>% 
+      gather(ind_monthly, val, -Partner:-Month, na.rm = TRUE) %>% 
+      mutate(val = as.double(val)) %>% 
+      rename(orgunituid = `DATIM ID`) %>% 
+      rename_all(tolower)
   
-  rm(surge_sites)
+  #filter to just 241 surge sites
+    load("data/surge_sites.rda")
+    
+    df_monthly <- df_monthly %>% 
+      add_column(surge_site = as.character(NA), .after = "orgunituid") %>% 
+      mutate(surge_site = ifelse(orgunituid %in% surge_sites, "TRUE", NA))
   
-#joining mapping to monthly data, dropping all non-essential indicators
-  load("data/key_ind.rda")
-  
-  df_monthly <- inner_join(df_monthly, key_ind, by = "ind_monthly")
-  
-  rm(key_ind)
+    rm(surge_sites)
 
-#aggregate up to indicator level
-  df_monthly <- df_monthly %>% 
-    select(-c(ind_monthly, sex, age)) %>% 
-    group_by_if(is.character) %>% 
-    summarise_at(vars(val), sum, na.rm = TRUE) %>% 
-    ungroup()
+
+# Data from NEW Monthly Portal: Mar 19 ------------------------------------
+
+  #import monthly data
+    df_monthly_mar <- read_excel("data/Facility Basic Raw Data.xlsx", 
+                                 col_types = "text")
+    
+  #unify variables with OLD
+    df_monthly_mar <- df_monthly_mar %>% 
+      rename(region = `SNU1: Region`,
+             district = `PSNU`,
+             partner = `Partner APR19`,
+             agency = Agency,
+             site = Facility, 
+             orgunituid = FacilityUID,
+             surge_site = `241 Site`) %>% 
+      select(-c(ID, MoH_ID, SNU1Uid, PSNUuid)) 
+    
+    df_monthly_mar <- df_monthly_mar %>% 
+      mutate_all(na_if, 0) %>% 
+      gather(ind_monthly, val, -region:-surge_site, na.rm = TRUE) %>% 
+      mutate(val = as.double(val)) %>% 
+      add_column(month = "Mar 2019", .after = "orgunituid")
+    
+
+# Combine data ------------------------------------------------------------
+
+  #append NEW data for March onto OLD
+    df_monthly <- df_monthly %>% 
+      bind_rows(df_monthly_mar)
+      rm(df_monthly_mar)
+    
+  #joining mapping to monthly data, dropping all non-essential indicators
+    load("data/key_ind.rda")
   
-#clean up date, conver to R date
-  df_monthly <- df_monthly %>% 
-    mutate(month = str_replace(month, " ", " 1, "),
-           month = mdy(month))
+    df_monthly <- inner_join(df_monthly, key_ind, by = "ind_monthly")
+    rm(key_ind)
+
+  #filter to just surge sites
+    df_monthly <- filter(df_monthly, surge_site == "TRUE") 
+  
+  #aggregate up to indicator level
+    df_monthly <- df_monthly %>% 
+      select(-c(ind_monthly, sex, age)) %>% 
+      group_by_if(is.character) %>% 
+      summarise_at(vars(val), sum, na.rm = TRUE) %>% 
+      ungroup()
+  
+  #clean up date, conver to R date
+    df_monthly <- df_monthly %>% 
+      mutate(month = str_replace(month, " ", " 1, "),
+             month = mdy(month))
 
 
 #create positivity, linkage and retention metrics (at partner level)
@@ -85,7 +125,7 @@
 #plot
   source("R/plot_cascade.R")
   
-  plot_cascade("HJF")
+  plot_cascade("EGPAF")
 
 
 #export
