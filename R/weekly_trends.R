@@ -154,12 +154,14 @@ library(RColorBrewer)
          Source: Deloitte, Additional_Weekly_Report_Data_Morogoro_17th_April_2019.xlsx") +
     theme_light() +
     theme(legend.position = "none",
-          text = element_text(family = "Gill Sans MT", size = 13),
+          text = element_text(family = "Gill Sans MT", size = 11),
           axis.ticks = element_blank(),
           panel.grid.major.x = element_blank(),
           panel.grid.minor.x = element_blank(),
           panel.border = element_blank(),
-          plot.caption = element_text(size = 10, color = "#595959"))
+          plot.caption = element_text(size = 9, color = "#595959"))
+  
+  ggsave("out/TZA_Deloitte_FY19Q2_Weekly_Morogoro.png", dpi = 300, width = 11, height = 8.5, units = "in")
   
   df %>%
     filter(partner == "Deloitte Consulting",
