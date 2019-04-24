@@ -40,9 +40,14 @@
 # Data from NEW Monthly Portal: Mar 19 ------------------------------------
 
   #import monthly data
-    df_monthly_mar <- read_excel("data/Facility Basic Raw Data.xlsx", 
+    df_monthly_mar_fac <- read_excel("data/Facility Basic Raw Data_Mar2019.xlsx", 
                                  col_types = "text")
+    df_monthly_mar_comm <- read_excel("data/Community Basic Raw Data_Mar2019.xlsx", 
+                                      col_types = "text")
     
+    df_monthly_mar <- bind_rows(df_monthly_mar_fac, df_monthly_mar_comm)
+      rm(df_monthly_mar_fac, df_monthly_mar_comm)
+  
   #unify variables with OLD
     df_monthly_mar <- df_monthly_mar %>% 
       rename(region = `SNU1: Region`,
